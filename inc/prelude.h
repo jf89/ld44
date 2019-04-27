@@ -15,6 +15,43 @@ typedef float  f32;
 typedef double f64;
 
 #define ARRAY_LENGTH(xs) (sizeof(xs) / sizeof((xs)[0]))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 #define SCREEN_WIDTH  1200
 #define SCREEN_HEIGHT 700
+
+#define MAX_CUBES 1000
+#define MAX_LEVEL_WIDTH  21
+#define MAX_LEVEL_HEIGHT 21
+#define MAX_LEVEL_LAYERS 10
+
+typedef struct { f32 elems[16]; } mat4;
+
+#define MAT4(...) (mat4) { .elems = { __VA_ARGS__ } }
+
+inline static mat4 mat_mul(mat4 a, mat4 b) {
+#define A(c, r) a.elems[(r << 2) | c]
+#define B(c, r) b.elems[(r << 2) | c]
+#define DOT(c, r) A(0,r)*B(c,0) + A(1,r)*B(c,1) + A(2,r)*B(c,2) + A(3,r)*B(c,3)
+	return MAT4(
+		DOT(0, 0), DOT(1, 0), DOT(2, 0), DOT(3, 0),
+		DOT(0, 1), DOT(1, 1), DOT(2, 1), DOT(3, 1),
+		DOT(0, 2), DOT(1, 2), DOT(2, 2), DOT(3, 2),
+		DOT(0, 3), DOT(1, 3), DOT(2, 3), DOT(3, 3),
+	);
+#undef DOT
+#undef A
+#undef B
+}
+
+/* inline static mat4 transpose(mat4 a) {
+#define A(c, r) a.elems[(r << 2) | c]
+	return MAT4(
+		A(0, 0), A(1, 0), A(2, 0), A(3, 0),
+		A(0, 1), A(1, 1), A(2, 1), A(3, 1),
+		A(0, 2), A(1, 2), A(2, 2), A(3, 2),
+		A(0, 3), A(1, 3), A(2, 3), A(3, 3),
+	);
+#undef A
+} */

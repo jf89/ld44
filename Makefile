@@ -3,14 +3,14 @@ CC = gcc
 INCLUDES = -include $(inc_dir)/prelude.h -I$(inc_dir)
 
 CCFLAGS = -Wall -ggdb --std=c99 $(shell sdl2-config --cflags) $(INCLUDES)
-LDFLAGS = $(shell sdl2-config --libs)
+LDFLAGS = $(shell sdl2-config --libs) -lm
 
 src_dir = src
 inc_dir = inc
 obj_dir = obj
 target_dir = bin
 
-src = gl_3_3.c opengl.c
+src = gl_3_3.c opengl.c game.c levels.c
 
 obj = $(patsubst %.c,$(obj_dir)/%.o,$(src))
 dep = $(patsubst %.c,$(obj_dir)/%.od,$(src))

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <time.h>
 #include <SDL.h>
 
 #include "gl_3_3.h"
@@ -6,6 +7,8 @@
 
 i32 main(i32 argc, char *argv[]) {
 	i32 exit_success = EXIT_FAILURE;
+
+	srand(time(NULL));
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
 		SDL_Log("Unable to initialize SDL : %s", SDL_GetError());
@@ -67,6 +70,11 @@ i32 main(i32 argc, char *argv[]) {
 			switch (e.type) {
 			case SDL_QUIT:
 				goto successful_exit;
+			case SDL_KEYUP:
+				switch (e.key.keysym.sym) {
+				case SDLK_q:
+					goto successful_exit;
+				}
 			}
 		}
 		// glClear(GL_COLOR_BUFFER_BIT);
