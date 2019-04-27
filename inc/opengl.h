@@ -4,7 +4,16 @@ i32 init_opengl(void);
 void quit_opengl(void);
 void test_draw(void);
 
-void set_camera(void);
+struct camera_params {
+	struct {
+		f32 x, y, z;
+	} camera_pos;
+	struct {
+		f32 x, y, z;
+	} look_at;
+};
+
+void set_camera(struct camera_params params);
 
 struct cube_params {
 	f32 r, g, b;
@@ -13,3 +22,4 @@ struct cube_params {
 
 void reset_cubes(void);
 void add_cube(struct cube_params params);
+void draw_world(void);

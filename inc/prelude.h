@@ -14,6 +14,10 @@ typedef uint64_t u64;
 typedef float  f32;
 typedef double f64;
 
+struct color {
+	f32 r, g, b;
+};
+
 #define ARRAY_LENGTH(xs) (sizeof(xs) / sizeof((xs)[0]))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
@@ -21,7 +25,8 @@ typedef double f64;
 #define SCREEN_WIDTH  1200
 #define SCREEN_HEIGHT 700
 
-#define MAX_CUBES 1000
+#define MAX_CUBES  1000
+#define MAX_COLORS 10
 #define MAX_LEVEL_WIDTH  21
 #define MAX_LEVEL_HEIGHT 21
 #define MAX_LEVEL_LAYERS 10
@@ -44,14 +49,3 @@ inline static mat4 mat_mul(mat4 a, mat4 b) {
 #undef A
 #undef B
 }
-
-/* inline static mat4 transpose(mat4 a) {
-#define A(c, r) a.elems[(r << 2) | c]
-	return MAT4(
-		A(0, 0), A(1, 0), A(2, 0), A(3, 0),
-		A(0, 1), A(1, 1), A(2, 1), A(3, 1),
-		A(0, 2), A(1, 2), A(2, 2), A(3, 2),
-		A(0, 3), A(1, 3), A(2, 3), A(3, 3),
-	);
-#undef A
-} */

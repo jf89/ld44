@@ -4,6 +4,8 @@
 
 #include "gl_3_3.h"
 #include "opengl.h"
+#include "levels.h"
+#include "game_ui.h"
 
 i32 main(i32 argc, char *argv[]) {
 	i32 exit_success = EXIT_FAILURE;
@@ -63,26 +65,10 @@ i32 main(i32 argc, char *argv[]) {
 	}
 
 	// success
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	while (1) {
-		SDL_Event e;
-		while (SDL_PollEvent(&e)) {
-			switch (e.type) {
-			case SDL_QUIT:
-				goto successful_exit;
-			case SDL_KEYUP:
-				switch (e.key.keysym.sym) {
-				case SDLK_q:
-					goto successful_exit;
-				}
-			}
-		}
-		// glClear(GL_COLOR_BUFFER_BIT);
-		test_draw();
-		SDL_GL_SwapWindow(window);
-	}
+	struct level level;
+	build_level_1(&level);
+	run_game_ui(window, &level);
 
-successful_exit:
 	exit_success = EXIT_SUCCESS;
 
 	quit_opengl();

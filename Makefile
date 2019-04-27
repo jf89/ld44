@@ -10,7 +10,7 @@ inc_dir = inc
 obj_dir = obj
 target_dir = bin
 
-src = gl_3_3.c opengl.c game.c levels.c
+src = gl_3_3.c opengl.c game.c levels.c game_ui.c
 
 obj = $(patsubst %.c,$(obj_dir)/%.o,$(src))
 dep = $(patsubst %.c,$(obj_dir)/%.od,$(src))

@@ -10,10 +10,8 @@ struct block {
 	} pos;
 	union {
 		struct {
-			struct {
-				u32 id;
-				f32 r, g, b;
-			} color;
+			// u32 id;
+			u8 color;
 		} cube;
 	};
 };
@@ -22,7 +20,8 @@ struct level {
 	u32 width, height, layers;
 	u32 num_blocks;
 	struct block blocks[MAX_CUBES];
+	struct color color_map[MAX_COLORS];
 };
 
 void reset_level(struct level *level);
-void build_level_from_strings(struct level *level, char ***strings);
+void build_level_from_strings(struct level *level, char **strings);

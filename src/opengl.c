@@ -299,14 +299,14 @@ static void draw_cubes(void) {
 //
 // =============================================================================
 
-void set_camera(void) {
+void set_camera(struct camera_params params) {
 	struct { f32 x, y, z; } camera_pos, look_at;
-	camera_pos.x =  0.0f;
-	camera_pos.y =  10.0f;
-	camera_pos.z = -10.0f;
-	look_at.x = 0.0f;
-	look_at.y = 0.0f;
-	look_at.z = 5.0f;
+	camera_pos.x = params.camera_pos.x;
+	camera_pos.y = params.camera_pos.y;
+	camera_pos.z = params.camera_pos.z;
+	look_at.x = params.look_at.x;
+	look_at.y = params.look_at.y;
+	look_at.z = params.look_at.z;
 
 	mat4 perspective = MAT4(
 		1.0f, 0.0f,  0.0f, 0.0f,
@@ -395,24 +395,10 @@ i32 init_opengl(void) {
 	glClearDepth(-1.0f);
 	glDepthFunc(GL_GREATER);
 
-	set_camera();
+	// TODO -- set this elsewhere
 	set_cube_ambient_light(0.5f, 0.5f, 0.5f);
 	set_cube_directional_light(0.5f, 0.5f, 0.5f);
 	set_cube_light_direction(-0.1f, -0.7f, 1.0f - sqrt(0.1f*0.1f + 0.7f*0.7f));
-	// TMP
-	reset_cubes();
-	for (i32 j = 0; j < 10; ++j) {
-		for (i32 i = -5; i <= 5; ++i) {
-			f32 x_offset = 0.1f * ((f32)rand()) / ((f32)RAND_MAX);
-			f32 y_offset = 0.1f * ((f32)rand()) / ((f32)RAND_MAX);
-			f32 z_offset = 0.1f * ((f32)rand()) / ((f32)RAND_MAX);
-			add_cube((struct cube_params){
-				.r = ((f32)j)/10.0f, .g = ((f32)i + 5)/11.0f, .b = 0.5f,
-				.x = (f32)i + x_offset, .y = 0.0f + y_offset, .z = (f32)j + z_offset,
-			});
-		}
-	}
-	// TMP
 
 	return 0;
 }
@@ -435,6 +421,13 @@ void test_draw(void) {
 	glBindVertexArray(test_vao);
 	glDrawArrays(GL_TRIANGLES, 0, ARRAY_LENGTH(test_vertices));
 
+	glEnable(GL_DEPTH_TEST);
+	draw_cubes();
+	glDisable(GL_DEPTH_TEST);
+}
+
+void draw_world(void) {
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	draw_cubes();
 	glDisable(GL_DEPTH_TEST);
