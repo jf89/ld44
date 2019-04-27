@@ -66,9 +66,23 @@ i32 main(i32 argc, char *argv[]) {
 
 	// success
 	struct level level;
-	build_level_1(&level);
-	run_game_ui(window, &level);
+	u32 cur_level = 1;
+	while (1) {
+		build_level(&level, cur_level);
+		enum outcome outcome = run_game_ui(window, &level);
+		switch (outcome) {
+		case OUTCOME_DEATH:
+			// Try again...
+			break;
+		case OUTCOME_SUCCESS:
+			++cur_level;
+			break;
+		case OUTCOME_QUIT:
+			goto successful_exit;
+		}
+	}
 
+successful_exit:
 	exit_success = EXIT_SUCCESS;
 
 	quit_opengl();

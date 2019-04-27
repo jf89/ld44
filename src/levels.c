@@ -18,6 +18,8 @@ void build_level_1(struct level *level) {
 	level->height = 3;
 	level->background_color
 		= (struct color){ .r = 0.0f, .g = 0.0f, .b = 0.1f };
+	level->player_color
+		= (struct color){ .r = 0.0f, .g = 0.75f, .b = 1.0f };
 	level->color_map[0] = (struct color){ .r=0.5f, .g=0.5f, .b=0.5f };
 	level->color_map[1] = (struct color){ .r=1.0f, .g=0.0f, .b=0.0f };
 	char *level_strs[] = {
@@ -30,4 +32,11 @@ void build_level_1(struct level *level) {
 		"### ### ###",
 	};
 	build_level_from_strings(level, level_strs);
+}
+
+void build_level(struct level *level, u32 n) {
+	reset_level(level);
+	switch (n) {
+	case 1: build_level_1(level); break;
+	}
 }

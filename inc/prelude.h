@@ -33,10 +33,14 @@ struct color {
 #define MAX_CUBES   1000
 #define MAX_LETTERS 1000
 #define MAX_ITEMS   1000
+#define MAX_BLOCKS (MAX_CUBES + MAX_ITEMS)
 #define MAX_COLORS  10
+#define MAX_EVENTS  1000
 #define MAX_LEVEL_WIDTH  21
 #define MAX_LEVEL_HEIGHT 21
 #define MAX_LEVEL_LAYERS 10
+
+#define MOVE_DURATION 0.25f
 
 typedef struct { f32 elems[16]; } mat4;
 

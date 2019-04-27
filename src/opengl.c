@@ -614,7 +614,7 @@ static i32 init_item(void) {
 
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE,
 		sizeof(struct item_params), (GLvoid*)offsetof(struct item_params, x));
-	glVertexAttribDivisor(4, 3);
+	glVertexAttribDivisor(4, 1);
 	glEnableVertexAttribArray(4);
 
 	glVertexAttribIPointer(5, 1, GL_UNSIGNED_BYTE,
@@ -642,7 +642,7 @@ void reset_items(void) {
 }
 
 void add_item(struct item_params params) {
-	assert(num_chars < MAX_ITEMS);
+	assert(num_items < MAX_ITEMS);
 	item_instances[num_items++] = params;
 }
 static void set_item_proj_mat(mat4 m) {
@@ -670,7 +670,7 @@ void draw_items(void) {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, num_items * sizeof(struct item_params), item_instances);
 	glUseProgram(item_program);
 	glBindVertexArray(item_vao);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, ARRAY_LENGTH(font_static_vertices), num_items);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, ARRAY_LENGTH(item_static_vertices), num_items);
 }
 
 // =============================================================================
@@ -886,7 +886,6 @@ void draw_world(void) {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	draw_cubes();
-	glDisable(GL_DEPTH_TEST);
 	draw_items();
-	// glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 }
