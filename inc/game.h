@@ -5,6 +5,7 @@ enum block_type {
 	BLOCK_TYPE_PLAYER,
 	BLOCK_TYPE_CUBE,
 	BLOCK_TYPE_HEART,
+	BLOCK_TYPE_GOAL,
 };
 
 struct block {
@@ -27,7 +28,7 @@ struct level {
 	u32 width, height, layers;
 	u32 num_blocks;
 	struct block blocks[MAX_BLOCKS];
-	struct color background_color, player_color;
+	struct color background_color, player_color, goal_color;
 	struct color color_map[MAX_COLORS];
 };
 
@@ -42,6 +43,8 @@ enum move {
 struct event {
 	enum {
 		EVENT_TYPE_MOVE,
+		EVENT_TYPE_COLLECTED,
+		EVENT_TYPE_WIN,
 	} type;
 	u32 block_id;
 	f32 start_time, duration;

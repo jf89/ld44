@@ -29,6 +29,7 @@ enum item_animator_state {
 	ITEM_STATE_IDLE,
 	ITEM_STATE_BOBBING,
 	ITEM_STATE_MOVING,
+	ITEM_STATE_COLLECTING,
 };
 
 static u32 num_item_animators;
@@ -54,6 +55,9 @@ struct item_animator {
 			f32 sx, sy, sz;
 			f32 ex, ey, ez;
 		} moving;
+		struct {
+			f32 start_time, duration;
+		} collecting;
 	};
 };
 static struct item_animator item_animators[MAX_ITEMS];
@@ -108,6 +112,13 @@ static void start_animation(struct event e) {
 		ia->moving.ez = e.move.z;
 		ia->moving.start_time = e.start_time;
 		ia->moving.duration   = e.duration;
+	} break;
+	case EVENT_TYPE_COLLECTED: {
+		struct item_animator *ia = get_item_animator_by_id(e.block_id);
+		assert(ia);
+		ia->state = ITEM_STATE_COLLECTING;
+		ia->collecting.start_time = e.start_time;
+		ia->collecting.duration   = e.duration;
 	} break;
 	}
 }
@@ -167,6 +178,22 @@ enum outcome run_game_ui(SDL_Window *window, struct level *level) {
 
 			ia.color = level->color_map[block.heart.color];
 			ia.character = (u8)'\003';
+
+			ia.bobbing.mag  = rand_f32(0.2f, 0.3f);
+			ia.bobbing.off  = rand_f32(0.0f, 2.0f*PI);
+			ia.bobbing.freq = rand_f32(1.0f, 1.5f);
+			item_animators[num_item_animators++] = ia;
+		} break;
+		case BLOCK_TYPE_GOAL: {
+			struct item_animator ia;
+			ia.block_id = block.block_id;
+			ia.state = ITEM_STATE_BOBBING;
+			ia.pos.x = (f32)block.pos.x;
+			ia.pos.y = (f32)block.pos.y;
+			ia.pos.z = (f32)block.pos.z;
+
+			ia.color = level->goal_color;
+			ia.character = (u8)'!';
 
 			ia.bobbing.mag  = rand_f32(0.2f, 0.3f);
 			ia.bobbing.off  = rand_f32(0.0f, 2.0f*PI);
@@ -236,7 +263,8 @@ enum outcome run_game_ui(SDL_Window *window, struct level *level) {
 				}
 				++i;
 			}
-			for (u32 i = 0; i < num_item_animators; ++i) {
+			i = 0;
+			while (i < num_item_animators) {
 				struct item_animator *ia
 					= &item_animators[i];
 				switch (ia->state) {
@@ -256,8 +284,21 @@ enum outcome run_game_ui(SDL_Window *window, struct level *level) {
 						next_state = STATE_ANIMATING;
 					}
 				} break;
+				case ITEM_STATE_COLLECTING:
+					if (time > ia->collecting.start_time
+						+ ia->collecting.duration) {
+
+						item_animators[i]
+							= item_animators[
+							--num_item_animators];
+						continue;
+					} else {
+						next_state = STATE_ANIMATING;
+					}
+					break;
 
 				}
+				++i;
 			}
 			cur_state = next_state;
 		}
@@ -317,6 +358,11 @@ enum outcome run_game_ui(SDL_Window *window, struct level *level) {
 				params.y = (ia.moving.ey - ia.moving.sy) * dt
 					+ ia.moving.sy
 					+ 4.0f * dt*(1.0f - dt) * 0.4f;
+			} break;
+			case ITEM_STATE_COLLECTING: {
+				f32 dt = (time - ia.collecting.start_time)
+					/ ia.collecting.duration;
+				params.y += dt*dt;
 			} break;
 
 			}

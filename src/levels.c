@@ -19,12 +19,14 @@ void build_level_1(struct level *level) {
 	level->background_color
 		= (struct color){ .r = 0.0f, .g = 0.0f, .b = 0.1f };
 	level->player_color
-		= (struct color){ .r = 0.0f, .g = 0.75f, .b = 1.0f };
+		= (struct color){ .r = 1.0f, .g = 0.75f, .b = 0.75f };
+	level->goal_color
+		= (struct color){ .r = 0.0f, .g = 1.0f, .b = 0.0f };
 	level->color_map[0] = (struct color){ .r=0.5f, .g=0.5f, .b=0.5f };
 	level->color_map[1] = (struct color){ .r=1.0f, .g=0.0f, .b=0.0f };
 	char *level_strs[] = {
 		"           ",
-		" a   @     ",
+		" a   @   ! ",
 		"           ",
 
 		"### ### ###",

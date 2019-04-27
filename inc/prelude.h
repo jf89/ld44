@@ -40,7 +40,8 @@ struct color {
 #define MAX_LEVEL_HEIGHT 21
 #define MAX_LEVEL_LAYERS 10
 
-#define MOVE_DURATION 0.25f
+#define MOVE_DURATION    0.25f
+#define COLLECT_DURATION 0.5f
 
 typedef struct { f32 elems[16]; } mat4;
 
