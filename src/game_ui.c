@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "gl_3_3.h"
 #include "opengl.h"
 
 #define PI 3.14159265358979f
@@ -57,6 +58,8 @@ void run_game_ui(SDL_Window *window, struct level *level) {
 		}
 	}
 
+	glClearColor(level->background_color.r, level->background_color.g,
+		level->background_color.b, 1.0f);
 	while (1) {
 		SDL_Event e;
 		while (SDL_PollEvent(&e)) {
@@ -72,6 +75,7 @@ void run_game_ui(SDL_Window *window, struct level *level) {
 		}
 
 		// Draw
+		// glClear();
 		f32 time = ((f32)SDL_GetTicks()) / 1000.0f;
 		reset_cubes();
 		for (u32 i = 0; i < num_cube_animators; ++i) {
@@ -88,7 +92,24 @@ void run_game_ui(SDL_Window *window, struct level *level) {
 			params.g = ca.color.g;
 			add_cube(params);
 		}
+		reset_items();
+		{
+			struct item_params item_params;
+			item_params.r = 0.0f;
+			item_params.b = 1.0f;
+			item_params.g = 1.0f;
+			item_params.x = 5.0f;
+			item_params.y = 1.0f;
+			item_params.z = 1.0f;
+			item_params.character = (u8)'@';
+			add_item(item_params);
+		}
 		draw_world();
+		reset_characters();
+		add_string("\003: 1",
+			(struct color){ .r=1.0f, .g=0.0f, .b=0.0f },
+			4.0f, 2.0f, -1.0f);
+		draw_characters();
 		SDL_GL_SwapWindow(window);
 	}
 }

@@ -71,6 +71,15 @@ typedef i32 GLintptr;
 #define GL_DEPTH_BUFFER_BIT 0x00000100
 #define GL_COLOR_BUFFER_BIT 0x00004000
 
+#define GL_TEXTURE_2D         0x0DE1
+#define GL_RGBA32F            0x8814
+#define GL_RGBA               0x1908
+#define GL_TEXTURE0           0x84C0
+#define GL_TEXTURE1           0x84C1
+#define GL_TEXTURE_MAG_FILTER 0x2800
+#define GL_TEXTURE_MIN_FILTER 0x2801
+#define GL_NEAREST            0x2600
+
 #define GL_3_3_FUNCTIONS \
 	/* begin function list */ \
 	GL_FUNC(void,   glClear,            GLbitfield mask) \
@@ -90,6 +99,8 @@ typedef i32 GLintptr;
 	GL_FUNC(void,   glGetProgramInfoLog, GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog) \
 	GL_FUNC(void,   glUseProgram,       GLuint program) \
 	GL_FUNC(GLint,  glGetUniformLocation, GLuint program, const GLchar *name) \
+	GL_FUNC(void,   glUniform1i,        GLint location, GLint v0) \
+	GL_FUNC(void,   glUniform2f,        GLint location, GLfloat v0, GLfloat v1) \
 	GL_FUNC(void,   glUniform3f,        GLint location, GLfloat v0, GLfloat v1, GLfloat v2) \
 	GL_FUNC(void,   glUniformMatrix4fv, GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) \
 	GL_FUNC(void,   glGenBuffers,       GLsizei n, GLuint *buffers) \
@@ -110,9 +121,17 @@ typedef i32 GLintptr;
 	GL_FUNC(void,   glDisable,          GLenum cap) \
 	GL_FUNC(void,   glDepthFunc,        GLenum func) \
 	GL_FUNC(void,   glDrawArrays,       GLenum mode, GLint first, GLsizei count) \
+	GL_FUNC(void,   glDrawArraysInstanced, GLenum mode, GLint first, GLsizei count, GLsizei primcount) \
 	GL_FUNC(void,   glDrawElements,     GLenum mode, GLsizei count, GLenum type, const GLvoid *indices) \
 	GL_FUNC(void,   glDrawElementsInstanced, GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, \
 		GLsizei primcount) \
+	GL_FUNC(void,   glGenTextures,      GLsizei n, GLuint *textures) \
+	GL_FUNC(void,   glDeleteTextures,   GLsizei n, const GLuint *textures) \
+	GL_FUNC(void,   glBindTexture,      GLenum target, GLuint texture) \
+	GL_FUNC(void,   glTexImage2D,       GLenum target, GLint level, GLint internalFormat, GLsizei width, \
+		GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *data) \
+	GL_FUNC(void,   glTexParameteri,    GLenum target, GLenum pname, GLint param) \
+	GL_FUNC(void,   glActiveTexture,    GLenum texture) \
 	/* end function list */
 
 #define GL_FUNC(return_type, name, ...) \

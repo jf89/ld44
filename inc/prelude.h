@@ -25,8 +25,15 @@ struct color {
 #define SCREEN_WIDTH  1200
 #define SCREEN_HEIGHT 700
 
-#define MAX_CUBES  1000
-#define MAX_COLORS 10
+#define FONT_TEX_WIDTH    288
+#define FONT_TEX_HEIGHT   128
+#define FONT_GLYPH_WIDTH  9
+#define FONT_GLYPH_HEIGHT 16
+
+#define MAX_CUBES   1000
+#define MAX_LETTERS 1000
+#define MAX_ITEMS   1000
+#define MAX_COLORS  10
 #define MAX_LEVEL_WIDTH  21
 #define MAX_LEVEL_HEIGHT 21
 #define MAX_LEVEL_LAYERS 10

@@ -20,6 +20,7 @@ struct level {
 	u32 width, height, layers;
 	u32 num_blocks;
 	struct block blocks[MAX_CUBES];
+	struct color background_color;
 	struct color color_map[MAX_COLORS];
 };
 

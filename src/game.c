@@ -30,6 +30,9 @@ static void level_add_block(struct level *level, char block_char,
 	case '@':
 		// TODO -- add player
 		break;
+	case 'a':
+		// TODO -- add hearts
+		break;
 	}
 }
 
@@ -40,12 +43,10 @@ void build_level_from_strings(struct level *level, char **strings) {
 		for (u8 k = level->height; k; --k) {
 			u8 z = k-1;
 			char *cur_str = *cur_str_ptr;
-			// SDL_Log("%s", cur_str);
 			for (u8 x = 0; x < level->width; ++x) {
 				level_add_block(level, cur_str[x], x, y, z);
 			}
 			++cur_str_ptr;
 		}
-		// SDL_Log("\n");
 	}
 }
