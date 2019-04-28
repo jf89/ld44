@@ -478,21 +478,19 @@ static void build_level_9(struct level *level) {
 	build_level_from_strings(level, level_strs);
 }
 
-void build_level(struct level *level, u32 n) {
+i32 build_level(struct level *level, u32 n) {
 	reset_level(level);
 	switch (n) {
-	case 0: build_level_0(level); break;
-	case 1: build_level_1(level); break;
-	case 2: build_level_2(level); break;
-	case 3: build_level_5(level); break;
-	case 4: build_level_3(level); break;
-	case 5: build_level_4(level); break;
-	case 6: build_level_6(level); break;
-	case 7: build_level_7(level); break;
-	case 8: build_level_8(level); break;
-	case 9: build_level_9(level); break;
-	default:
-		assert(0);
-		break;
+	case 0: build_level_0(level); return 0;
+	case 1: build_level_1(level); return 0;
+	case 2: build_level_2(level); return 0;
+	case 3: build_level_5(level); return 0;
+	case 4: build_level_3(level); return 0;
+	case 5: build_level_4(level); return 0;
+	case 6: build_level_6(level); return 0;
+	case 7: build_level_7(level); return 0;
+	case 8: build_level_8(level); return 0;
+	case 9: build_level_9(level); return 0;
 	}
+	return 1;
 }

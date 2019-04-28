@@ -7,6 +7,7 @@
 #include "opengl.h"
 #include "levels.h"
 #include "game_ui.h"
+#include "end_ui.h"
 #include "audio.h"
 
 i32 main(i32 argc, char *argv[]) {
@@ -83,9 +84,11 @@ i32 main(i32 argc, char *argv[]) {
 
 	// success
 	struct level level;
-	u32 cur_level = 0;
+	u32 cur_level = 9;
 	while (1) {
-		build_level(&level, cur_level);
+		if (build_level(&level, cur_level)) {
+			goto exit_with_outro;
+		}
 		enum outcome outcome = run_game_ui(window, &level);
 		switch (outcome) {
 		case OUTCOME_DEATH:
@@ -98,6 +101,9 @@ i32 main(i32 argc, char *argv[]) {
 			goto successful_exit;
 		}
 	}
+
+exit_with_outro:
+	run_end_ui(window);
 
 successful_exit:
 	exit_success = EXIT_SUCCESS;
