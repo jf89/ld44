@@ -63,8 +63,11 @@ typedef i32 GLintptr;
 
 #define GL_TRIANGLES 0x0004
 
-#define GL_CULL_FACE  0x0B44
-#define GL_DEPTH_TEST 0x0B71
+#define GL_BLEND               0x0BE2
+#define GL_CULL_FACE           0x0B44
+#define GL_DEPTH_TEST          0x0B71
+#define GL_SRC_ALPHA           0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
 
 #define GL_GREATER 0x0204
 
@@ -102,6 +105,7 @@ typedef i32 GLintptr;
 	GL_FUNC(void,   glUniform1i,        GLint location, GLint v0) \
 	GL_FUNC(void,   glUniform2f,        GLint location, GLfloat v0, GLfloat v1) \
 	GL_FUNC(void,   glUniform3f,        GLint location, GLfloat v0, GLfloat v1, GLfloat v2) \
+	GL_FUNC(void,   glUniform4f,        GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) \
 	GL_FUNC(void,   glUniformMatrix4fv, GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) \
 	GL_FUNC(void,   glGenBuffers,       GLsizei n, GLuint *buffers) \
 	GL_FUNC(void,   glDeleteBuffers,    GLsizei n, GLuint *buffers) \
@@ -120,6 +124,7 @@ typedef i32 GLintptr;
 	GL_FUNC(void,   glEnable,           GLenum cap) \
 	GL_FUNC(void,   glDisable,          GLenum cap) \
 	GL_FUNC(void,   glDepthFunc,        GLenum func) \
+	GL_FUNC(void,   glBlendFunc,        GLenum sfactor, GLenum dfactor) \
 	GL_FUNC(void,   glDrawArrays,       GLenum mode, GLint first, GLsizei count) \
 	GL_FUNC(void,   glDrawArraysInstanced, GLenum mode, GLint first, GLsizei count, GLsizei primcount) \
 	GL_FUNC(void,   glDrawElements,     GLenum mode, GLsizei count, GLenum type, const GLvoid *indices) \

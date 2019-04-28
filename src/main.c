@@ -34,6 +34,10 @@ i32 main(i32 argc, char *argv[]) {
 		goto error_set_gl_minor_version;
 	}
 
+	// TODO -- error checking
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
 	SDL_Window *window = SDL_CreateWindow("ld44",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
@@ -66,7 +70,7 @@ i32 main(i32 argc, char *argv[]) {
 
 	// success
 	struct level level;
-	u32 cur_level = 1;
+	u32 cur_level = 0;
 	while (1) {
 		build_level(&level, cur_level);
 		enum outcome outcome = run_game_ui(window, &level);

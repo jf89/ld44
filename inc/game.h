@@ -29,7 +29,9 @@ struct level {
 	u32 num_blocks;
 	struct block blocks[MAX_BLOCKS];
 	struct color background_color, player_color, goal_color;
+	u32 num_colors;
 	struct color color_map[MAX_COLORS];
+	u8 player_health[MAX_COLORS];
 };
 
 enum move {
@@ -42,16 +44,37 @@ enum move {
 
 struct event {
 	enum {
+		EVENT_TYPE_BOUNCE,
 		EVENT_TYPE_MOVE,
 		EVENT_TYPE_COLLECTED,
 		EVENT_TYPE_WIN,
+		EVENT_TYPE_FALL,
+		EVENT_TYPE_DEATH,
+		EVENT_TYPE_LOSE_HEALTH,
+		EVENT_TYPE_GAIN_HEALTH,
 	} type;
 	u32 block_id;
 	f32 start_time, duration;
 	union {
 		struct {
+			i8 dx, dy, dz;
+		} bounce;
+		struct {
 			i8 x, y, z;
 		} move;
+		struct {
+			i8 x, y, z;
+		} fall;
+		struct {
+			u8 color;
+			u8 amount;
+			u8 new_amount;
+		} lose_health;
+		struct {
+			u8 color;
+			u8 amount;
+			u8 new_amount;
+		} gain_health;
 	};
 };
 

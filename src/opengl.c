@@ -69,17 +69,18 @@ static void print_matrix(mat4 m) {
 }
 
 // =============================================================================
-// test shader
+// fade shader
 // =============================================================================
 
-static GLuint test_buffer, test_vao;
-static GLuint test_program, test_vert_shader, test_frag_shader;
+static GLuint fade_buffer, fade_vao;
+static GLuint fade_program, fade_vert_shader, fade_frag_shader;
+static GLint fade_color_loc;
 
-struct test_vertex {
+struct fade_vertex {
 	f32 x, y;
 };
 
-static struct test_vertex test_vertices[] = {
+static struct fade_vertex fade_vertices[] = {
 	{ .x = -1.0f, .y = -1.0f },
 	{ .x =  1.0f, .y = -1.0f },
 	{ .x =  1.0f, .y =  1.0f },
@@ -89,26 +90,72 @@ static struct test_vertex test_vertices[] = {
 	{ .x = -1.0f, .y =  1.0f },
 };
 
-static const char *test_vert_shader_src = SHADER_SRC(
-	layout (location = 0) in vec2 in_pos;
-
-	out vec2 pos;
+static const char *fade_vert_shader_src = SHADER_SRC(
+	layout (location = 0) in vec2 pos;
 
 	void main() {
-		pos = in_pos;
-		gl_Position = vec4(in_pos, 0.0f, 1.0f);
+		gl_Position = vec4(pos, 0.0f, 1.0f);
 	}
 );
 
-static const char *test_frag_shader_src = SHADER_SRC(
+static const char *fade_frag_shader_src = SHADER_SRC(
+	uniform vec4 fade_color;
+
 	layout (location = 0) out vec4 color;
 
-	in vec2 pos;
-
 	void main() {
-		color = vec4(pos, 0.0f, 1.0f);
+		color = fade_color;
 	}
 );
+
+i32 init_fade(void) {
+	// TODO -- error checking
+	fade_vert_shader = compile_shader(GL_VERTEX_SHADER,   fade_vert_shader_src);
+	fade_frag_shader = compile_shader(GL_FRAGMENT_SHADER, fade_frag_shader_src);
+
+	fade_program = glCreateProgram();
+	glAttachShader(fade_program, fade_vert_shader);
+	glAttachShader(fade_program, fade_frag_shader);
+	fade_program = link_program(fade_program);
+
+	fade_color_loc = glGetUniformLocation(fade_program, "fade_color");
+
+	glGenVertexArrays(1, &fade_vao);
+	glBindVertexArray(fade_vao);
+
+	glGenBuffers(1, &fade_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, fade_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fade_vertices), &fade_vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return 0;
+}
+
+void free_fade(void) {
+	glDeleteProgram(fade_program);
+	glDeleteShader(fade_vert_shader);
+	glDeleteShader(fade_frag_shader);
+
+	glDeleteBuffers(1, &fade_buffer);
+	glDeleteVertexArrays(1, &fade_vao);
+}
+
+void set_fade_color(f32 r, f32 g, f32 b, f32 a) {
+	glUseProgram(fade_program);
+	glUniform4f(fade_color_loc, r, g, b, a);
+}
+
+void draw_fade(void) {
+	glEnable(GL_BLEND);
+	glUseProgram(fade_program);
+	glBindVertexArray(fade_vao);
+	glDrawArrays(GL_TRIANGLES, 0, ARRAY_LENGTH(fade_vertices));
+	glDisable(GL_BLEND);
+}
 
 // =============================================================================
 // cube shader
@@ -502,13 +549,13 @@ struct item_static_vertex {
 };
 
 static struct item_static_vertex item_static_vertices[] = {
-	{ .pos={ .x=-0.4f, .y=-0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.0f, .v=0.0f } },
-	{ .pos={ .x= 0.4f, .y=-0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=1.0f, .v=0.0f } },
-	{ .pos={ .x= 0.4f, .y= 0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=1.0f, .v=1.0f } },
+	{ .pos={ .x=-0.4f, .y=-0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.01f, .v=0.01f } },
+	{ .pos={ .x= 0.4f, .y=-0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.99f, .v=0.01f } },
+	{ .pos={ .x= 0.4f, .y= 0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.99f, .v=0.99f } },
 
-	{ .pos={ .x=-0.4f, .y=-0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.0f, .v=0.0f } },
-	{ .pos={ .x= 0.4f, .y= 0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=1.0f, .v=1.0f } },
-	{ .pos={ .x=-0.4f, .y= 0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.0f, .v=1.0f } },
+	{ .pos={ .x=-0.4f, .y=-0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.01f, .v=0.01f } },
+	{ .pos={ .x= 0.4f, .y= 0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.99f, .v=0.99f } },
+	{ .pos={ .x=-0.4f, .y= 0.5f, .z=0.0f }, .normal={ .x=0.0f, .y=0.0f, .z=1.0f }, .tex={ .u=0.01f, .v=0.99f } },
 };
 
 static u32 num_items;
@@ -818,28 +865,8 @@ void set_camera(struct camera_params params) {
 
 i32 init_opengl(void) {
 	// TODO -- error checking
-	test_vert_shader = compile_shader(GL_VERTEX_SHADER,   test_vert_shader_src);
-	test_frag_shader = compile_shader(GL_FRAGMENT_SHADER, test_frag_shader_src);
-
-	test_program = glCreateProgram();
-	glAttachShader(test_program, test_vert_shader);
-	glAttachShader(test_program, test_frag_shader);
-	test_program = link_program(test_program);
-
-	glGenVertexArrays(1, &test_vao);
-	glBindVertexArray(test_vao);
-
-	glGenBuffers(1, &test_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, test_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(test_vertices), &test_vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// TODO -- error checking
 	load_textures();
+	init_fade();
 	init_cube();
 	init_font();
 	init_item();
@@ -847,6 +874,7 @@ i32 init_opengl(void) {
 	glEnable(GL_CULL_FACE);
 	glClearDepth(-1.0f);
 	glDepthFunc(GL_GREATER);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// TODO -- set this elsewhere
 	set_ambient_light(0.5f, 0.5f, 0.5f);
@@ -857,29 +885,11 @@ i32 init_opengl(void) {
 }
 
 void quit_opengl(void) {
-	glDeleteProgram(test_program);
-	glDeleteShader(test_vert_shader);
-	glDeleteShader(test_frag_shader);
-
-	glDeleteBuffers(1, &test_buffer);
-	glDeleteVertexArrays(1, &test_vao);
-
+	free_fade();
 	free_cube();
 	free_font();
 	free_item();
 	free_textures();
-}
-
-void test_draw(void) {
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-	glUseProgram(test_program);
-	glBindVertexArray(test_vao);
-	glDrawArrays(GL_TRIANGLES, 0, ARRAY_LENGTH(test_vertices));
-
-	glEnable(GL_DEPTH_TEST);
-	draw_cubes();
-	glDisable(GL_DEPTH_TEST);
 }
 
 void draw_world(void) {

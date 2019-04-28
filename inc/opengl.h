@@ -36,3 +36,6 @@ struct item_params {
 
 void reset_items(void);
 void add_item(struct item_params params);
+
+void set_fade_color(f32 r, f32 g, f32 b, f32 a);
+void draw_fade(void);

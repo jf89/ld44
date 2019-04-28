@@ -30,18 +30,26 @@ struct color {
 #define FONT_GLYPH_WIDTH  9
 #define FONT_GLYPH_HEIGHT 16
 
-#define MAX_CUBES   1000
-#define MAX_LETTERS 1000
-#define MAX_ITEMS   1000
-#define MAX_BLOCKS (MAX_CUBES + MAX_ITEMS)
-#define MAX_COLORS  10
-#define MAX_EVENTS  1000
+#define MAX_CUBES        1000
+#define MAX_LETTERS      1000
+#define MAX_ITEMS        1000
+#define MAX_BLOCKS       (MAX_CUBES + MAX_ITEMS)
+#define MAX_COLORS       10
+#define MAX_EVENTS       1000
+#define MAX_HEALTH_TEXT  100
 #define MAX_LEVEL_WIDTH  21
 #define MAX_LEVEL_HEIGHT 21
 #define MAX_LEVEL_LAYERS 10
 
-#define MOVE_DURATION    0.25f
-#define COLLECT_DURATION 0.5f
+#define MOVE_DURATION          0.25f
+#define BOUNCE_DURATION        0.2f
+#define BOUNCE_DISTANCE        0.5f
+#define COLLECT_DURATION       0.25f
+#define FADE_DURATION          0.5f
+#define JUMP_HEIGHT            0.4f
+#define FALL_SPEED             (16.0f * JUMP_HEIGHT)
+#define HEALTH_ANIM_DURATION   0.25f
+#define NUM_HEALTH_FLASHES     5
 
 typedef struct { f32 elems[16]; } mat4;
 
