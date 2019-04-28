@@ -8,6 +8,7 @@
 
 #include "gl_3_3.h"
 #include "opengl.h"
+#include "audio.h"
 
 #define PI 3.14159265358979f
 
@@ -135,6 +136,9 @@ static void set_item_animator_state(
 static void start_animation(struct event e) {
 	switch (e.type) {
 	case EVENT_TYPE_MOVE: {
+		if (e.move.is_player) {
+			play_sound(SOUND_MOVE);
+		}
 		struct item_animator *ia = get_item_animator_by_id(e.block_id);
 		assert(ia);
 		ia->state = ITEM_STATE_MOVING;
@@ -161,6 +165,9 @@ static void start_animation(struct event e) {
 		ia->rebound.duration   = e.duration;
 	} break;
 	case EVENT_TYPE_COLLECTED: {
+		if (e.collect.block_type == BLOCK_TYPE_HEART) {
+			play_sound(SOUND_HEART);
+		}
 		struct item_animator *ia = get_item_animator_by_id(e.block_id);
 		assert(ia);
 		ia->state = ITEM_STATE_COLLECTING;
@@ -168,6 +175,7 @@ static void start_animation(struct event e) {
 		ia->collecting.duration   = e.duration;
 	} break;
 	case EVENT_TYPE_WIN:
+		play_sound(SOUND_VICTORY);
 		program_outcome = OUTCOME_SUCCESS;
 		cur_state = STATE_FADE_OUT;
 		fade_animator.start_time    = e.start_time;
@@ -212,6 +220,7 @@ static void start_animation(struct event e) {
 		ia->pos.z = e.fall.z;
 	} break;
 	case EVENT_TYPE_LOSE_HEALTH: {
+		play_sound(SOUND_HURT);
 		struct health_animator *ha
 			= &health_animators[e.lose_health.color];
 		ha->state = HEALTH_ANIM_FLASHING;
@@ -431,6 +440,7 @@ enum outcome run_game_ui(SDL_Window *window, struct level *level) {
 					if (time > ia->falling.start_time
 						+ ia->falling.duration) {
 
+						play_sound(SOUND_FALL);
 						set_item_animator_state(
 							ia, ITEM_STATE_IDLE);
 					} else {

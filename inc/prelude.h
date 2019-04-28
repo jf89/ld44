@@ -25,6 +25,8 @@ struct color {
 #define SCREEN_WIDTH  1200
 #define SCREEN_HEIGHT 700
 
+#define NUM_MIX_CHANNELS 2
+
 #define FONT_TEX_WIDTH    288
 #define FONT_TEX_HEIGHT   128
 #define FONT_GLYPH_WIDTH  9

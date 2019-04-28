@@ -393,7 +393,7 @@ static void build_level_8(struct level *level) {
 	level->color_map[1] = (struct color){ .r=1.0f, .g=0.75f, .b=0.0f };
 	level->color_map[2] = (struct color){ .r=0.0f, .g=0.75f, .b=1.0f };
 	level->player_health[1] = 0;
-	level->player_health[2] = 5;
+	level->player_health[2] = 4;
 	level->num_colors = 3;
 	char *level_strs[] = {
 		"             ",

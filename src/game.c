@@ -196,6 +196,7 @@ static void collect(
 	e.block_id   = collected.block_id;
 	e.start_time = time;
 	e.duration   = COLLECT_DURATION;
+	e.collect.block_type = collected.type;
 	assert(*num_events_out < MAX_EVENTS);
 	events_out[*num_events_out] = e;
 	++(*num_events_out);
@@ -364,6 +365,7 @@ static void do_move(
 		e->block_id = mover->block_id;
 		e->start_time = time;
 		e->duration = MOVE_DURATION;
+		e->move.is_player = (mover->type == BLOCK_TYPE_PLAYER) ? 1 : 0;
 		e->move.x = x;
 		e->move.y = y;
 		e->move.z = z;

@@ -57,9 +57,11 @@ struct event {
 	f32 start_time, duration;
 	union {
 		struct {
+			u8 is_player;
 			i8 dx, dy, dz;
 		} bounce;
 		struct {
+			u8 is_player;
 			i8 x, y, z;
 		} move;
 		struct {
@@ -75,6 +77,9 @@ struct event {
 			u8 amount;
 			u8 new_amount;
 		} gain_health;
+		struct {
+			enum block_type block_type;
+		} collect;
 	};
 };
 
