@@ -70,7 +70,7 @@ i32 main(i32 argc, char *argv[]) {
 
 	// success
 	struct level level;
-	u32 cur_level = 0;
+	u32 cur_level = 9;
 	while (1) {
 		build_level(&level, cur_level);
 		enum outcome outcome = run_game_ui(window, &level);

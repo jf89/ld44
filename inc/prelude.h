@@ -50,6 +50,7 @@ struct color {
 #define FALL_SPEED             (16.0f * JUMP_HEIGHT)
 #define HEALTH_ANIM_DURATION   0.25f
 #define NUM_HEALTH_FLASHES     5
+#define BETWEEN_FALL_DELAY     0.1f
 
 typedef struct { f32 elems[16]; } mat4;
 

@@ -23,6 +23,7 @@ static void level_add_block(struct level *level, char block_char,
 	switch (block_char) {
 	case '1':
 	case '2':
+	case '3':
 	case '#': {
 		assert(level->num_blocks < MAX_BLOCKS);
 		struct block block;
@@ -34,6 +35,7 @@ static void level_add_block(struct level *level, char block_char,
 		case '#': block.cube.color = 0; break;
 		case '1': block.cube.color = 1; break;
 		case '2': block.cube.color = 2; break;
+		case '3': block.cube.color = 3; break;
 		}
 		block.block_id = level->num_blocks;
 		level->blocks[level->num_blocks++] = block;
@@ -49,7 +51,8 @@ static void level_add_block(struct level *level, char block_char,
 		level->blocks[level->num_blocks++] = block;
 	} break;
 	case 'a':
-	case 'b': {
+	case 'b':
+	case 'c': {
 		assert(level->num_blocks < MAX_BLOCKS);
 		struct block block;
 		block.type = BLOCK_TYPE_HEART;
@@ -59,6 +62,7 @@ static void level_add_block(struct level *level, char block_char,
 		switch (block_char) {
 		case 'a': block.heart.color = 1; break;
 		case 'b': block.heart.color = 2; break;
+		case 'c': block.heart.color = 3; break;
 		}
 		block.block_id = level->num_blocks;
 		level->blocks[level->num_blocks++] = block;
@@ -282,13 +286,76 @@ static void lose_health(
 	}
 }
 
+static void do_fall(
+		struct level *level,
+		u32 *num_events_out,
+		struct event *events_out,
+		f32 time, struct block *faller) {
+	i8 ox = faller->pos.x, oy = faller->pos.y, oz = faller->pos.z;
+	i8 x = ox, y = oy, z = oz;
+	u32 fall_height = 0;
+	f32 fall_duration = 0.0f;
+	struct block *b;
+	struct event *e;
+	do {
+		--y; ++fall_height;
+		b = block_in_pos(level, x, y, z);
+		// TODO -- add collection while falling through items
+	} while (y >= 0 && can_walk_through(b->type));
+	--fall_height;
+	if (fall_height) {
+		e = &events_out[*num_events_out];
+		++(*num_events_out);
+		e->type = EVENT_TYPE_FALL;
+		e->block_id = faller->block_id;
+		e->start_time = time;
+		fall_duration = ((f32)fall_height) / FALL_SPEED;
+		e->duration   = fall_duration;
+		e->fall.x = x;
+		e->fall.y = y+1;
+		e->fall.z = z;
+		faller->pos.x = x;
+		faller->pos.y = y+1;
+		faller->pos.z = z;
+		if (y < 0 && faller->type == BLOCK_TYPE_PLAYER) {
+			e = &events_out[*num_events_out];
+			++(*num_events_out);
+			e->type = EVENT_TYPE_DEATH;
+			e->start_time = time + fall_duration;
+			e->duration = FADE_DURATION;
+		}
+		if (b->type != BLOCK_TYPE_EMPTY) {
+			lose_health(level, num_events_out, events_out,
+				time + fall_duration,
+				faller, 0, fall_height);
+		}
+		struct block *above = block_in_pos(level, ox, oy+1, oz);
+		if (above->type == BLOCK_TYPE_CUBE && above->cube.color) {
+			do_fall(level, num_events_out, events_out,
+				time + BETWEEN_FALL_DELAY, above);
+		}
+	}
+	if (b->type != BLOCK_TYPE_EMPTY) {
+		switch (b->type) {
+		case BLOCK_TYPE_CUBE:
+			if (b->cube.color) {
+				lose_health(level, num_events_out,
+					events_out, time + fall_duration,
+					faller, b->cube.color, 1);
+			}
+			break;
+		}
+	}
+}
+
 static void do_move(
 		struct level *level,
 		u32 *num_events_out,
 		struct event *events_out,
 		f32 time,
 		struct block *mover, i8 dx, i8 dy, i8 dz) {
-	i8 x = mover->pos.x + dx, y = mover->pos.y + dy, z = mover->pos.z + dz;
+	i8 ox = mover->pos.x, oy = mover->pos.y, oz = mover->pos.z;
+	i8 x = ox + dx, y = oy + dy, z = oz + dz;
 	struct block *b = block_in_pos(level, x, y, z);
 	if (can_walk_through(b->type)) {
 		struct event *e = &events_out[*num_events_out];
@@ -307,55 +374,14 @@ static void do_move(
 			collect(level, num_events_out, events_out, time,
 				mover, b);
 		}
-		u32 fall_height = 0;
-		do {
-			--y; ++fall_height;
-			b = block_in_pos(level, x, y, z);
-			// TODO -- add collection while falling through items
-		} while (y >= 0 && can_walk_through(b->type));
-		--fall_height;
-		if (fall_height) {
-			e = &events_out[*num_events_out];
-			++(*num_events_out);
-			e->type = EVENT_TYPE_FALL;
-			e->block_id = mover->block_id;
-			e->start_time = time + MOVE_DURATION;
-			f32 fall_duration = ((f32)fall_height) / FALL_SPEED;
-			e->duration   = fall_duration;
-			e->fall.x = x;
-			e->fall.y = y+1;
-			e->fall.z = z;
-			mover->pos.x = x;
-			mover->pos.y = y+1;
-			mover->pos.z = z;
-			if (y < 0 && mover->type == BLOCK_TYPE_PLAYER) {
-				e = &events_out[*num_events_out];
-				++(*num_events_out);
-				e->type = EVENT_TYPE_DEATH;
-				e->start_time = time + MOVE_DURATION
-					+ fall_duration;
-				e->duration = FADE_DURATION;
-			}
-			if (b->type != BLOCK_TYPE_EMPTY) {
-				lose_health(level, num_events_out, events_out,
-					time + MOVE_DURATION + fall_duration,
-					mover, 0, fall_height);
-			}
+		do_fall(level, num_events_out, events_out,
+			time + MOVE_DURATION, mover);
+		b = block_in_pos(level, ox, oy+1, oz);
+		if (b->type == BLOCK_TYPE_CUBE && b->cube.color) {
+			do_fall(level, num_events_out, events_out,
+				time + MOVE_DURATION, b);
 		}
-		if (b->type != BLOCK_TYPE_EMPTY) {
-			// TODO -- land on block beneath
-			switch (b->type) {
-			case BLOCK_TYPE_CUBE:
-				if (b->cube.color) {
-					lose_health(level, num_events_out,
-						events_out,
-						time + MOVE_DURATION,
-						mover,
-						b->cube.color, 1);
-				}
-				break;
-			}
-		}
+
 	} else {
 		struct event *e = &events_out[*num_events_out];
 		++(*num_events_out);
