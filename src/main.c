@@ -84,7 +84,7 @@ i32 main(i32 argc, char *argv[]) {
 
 	// success
 	struct level level;
-	u32 cur_level = 9;
+	u32 cur_level = 0;
 	while (1) {
 		if (build_level(&level, cur_level)) {
 			goto exit_with_outro;
